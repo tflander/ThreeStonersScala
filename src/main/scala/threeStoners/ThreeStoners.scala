@@ -1,8 +1,6 @@
 package threeStoners
 
 import scala.collection.mutable.Queue
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 object ThreeStoners extends App {
 
@@ -10,15 +8,15 @@ object ThreeStoners extends App {
   val messageQueue = new Queue[Message]
   val stoners = for (stoner <- circleOrder) yield Stoner(stoner, messageQueue, circleOrder)
 
-  // TODO: Scala way?
-  val executor = Executors.newFixedThreadPool(10);
 		messageQueue += new Message(null, Matches, "yourTurnToRoll");
 
 		for (smoker <- stoners) {
-			executor.submit(smoker);
+		  smoker.start()
 		}
+		
+		Thread.sleep(100)
+		
+		System.exit(0)  // TODO:  BAD!!!
 
-		executor.awaitTermination(100, TimeUnit.MILLISECONDS);
-		executor.shutdownNow();
 		println("finished")
 }

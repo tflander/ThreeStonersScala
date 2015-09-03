@@ -4,6 +4,7 @@ import scala.collection.mutable.Queue
 import java.util.regex.Pattern
 import scala.util.matching.Regex
 import scala.util.Random
+import scala.actors.Actor
 
 abstract class SmokingSupply {
   override def toString(): String = getClass.getSimpleName.replaceAllLiterally("$", "")
@@ -12,7 +13,7 @@ object Weed extends SmokingSupply
 object Paper extends SmokingSupply
 object Matches extends SmokingSupply
 
-case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrder: Seq[SmokingSupply]) extends Runnable {
+case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrder: Seq[SmokingSupply]) extends Actor {
 
   val stonerId = supply
   var supplyCount = 0
@@ -92,7 +93,21 @@ case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrd
     }
   }
 
-  override def run() {
+//  override def run() {
+//    while (!Thread.interrupted()) {
+//      try {
+//        handleTransitions();
+//      } catch {
+//        case e: InterruptedException => return
+//        case t: Throwable => {
+//          t.printStackTrace();
+//          System.exit(1);
+//        }
+//      }
+//    }
+//  }
+
+  override def act() {
     while (!Thread.interrupted()) {
       try {
         handleTransitions();
@@ -103,7 +118,6 @@ case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrd
           System.exit(1);
         }
       }
-    }
+    }    
   }
-
 }
