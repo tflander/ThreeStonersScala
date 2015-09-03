@@ -1,6 +1,5 @@
 package threeStoners
 
-import scala.collection.mutable.Queue
 import java.util.regex.Pattern
 import scala.util.matching.Regex
 import scala.util.Random
@@ -13,11 +12,16 @@ object Weed extends SmokingSupply
 object Paper extends SmokingSupply
 object Matches extends SmokingSupply
 
-case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrder: Seq[SmokingSupply]) extends Actor {
+case class Message(from: SmokingSupply, to: SmokingSupply, message: String)
+
+case class Stoner(supply: SmokingSupply, circleOrder: Seq[SmokingSupply]) extends Actor {
 
   val stonerId = supply
   var supplyCount = 0
 
+  var stoners: Seq[Stoner] = _
+  
+  // TODO:  get rid of circleOrder
   val nextStoner = {
     val stonerCount = circleOrder.size
     val me = circleOrder.indexOf(stonerId)
@@ -28,7 +32,7 @@ case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrd
   }
 
   def processMessage(message: Message) = {
-    require(message.to == stonerId)
+    require(message.to == stonerId, "invalid message:to.  Got " + message.to + ", expected " + stonerId)
     val hitJointPattern = "hitJoint(\\d+)".r
 
     message.message match {
@@ -77,42 +81,17 @@ case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrd
   }
 
   def sendMessage(to: SmokingSupply, message: String) = {
-    messageQueue += Message(from = stonerId, to, message)
-  }
-
-  def handleTransitions() = {
-    messageQueue.synchronized {
-      messageQueue.get(0) match {
-        case Some(message) => {
-          if (message.to == stonerId) {
-            processMessage(messageQueue.dequeue)
-          }
-        }
-        case None =>
-      }
-    }
+    stoners.filter(_.supply == to).head ! Message(from = stonerId, to, message)
   }
 
   override def act() {
     
     react {
       case message: Message => {
-        println(message.to + " guy got message " + message.message + " from " + message.from)
+        processMessage(message)
         act()
       }
       case "EXIT" => println(stonerId + " guy exiting")
-    }
-    
-//    while (!Thread.interrupted()) {
-//      try {
-//        handleTransitions();
-//      } catch {
-//        case e: InterruptedException => return
-//        case t: Throwable => {
-//          t.printStackTrace();
-//          System.exit(1);
-//        }
-//      }
-//    }    
+    }    
   }
 }
