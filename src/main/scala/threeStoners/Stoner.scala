@@ -93,7 +93,16 @@ case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrd
     }
   }
 
-//  override def run() {
+  override def act() {
+    
+    react {
+      case message: Message => {
+        println(message.to + " guy got message " + message.message + " from " + message.from)
+        act()
+      }
+      case "EXIT" => println(stonerId + " guy exiting")
+    }
+    
 //    while (!Thread.interrupted()) {
 //      try {
 //        handleTransitions();
@@ -104,20 +113,6 @@ case class Stoner(supply: SmokingSupply, messageQueue: Queue[Message], circleOrd
 //          System.exit(1);
 //        }
 //      }
-//    }
-//  }
-
-  override def act() {
-    while (!Thread.interrupted()) {
-      try {
-        handleTransitions();
-      } catch {
-        case e: InterruptedException => return
-        case t: Throwable => {
-          t.printStackTrace();
-          System.exit(1);
-        }
-      }
-    }    
+//    }    
   }
 }

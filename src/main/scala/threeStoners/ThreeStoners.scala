@@ -8,15 +8,20 @@ object ThreeStoners extends App {
   val messageQueue = new Queue[Message]
   val stoners = for (stoner <- circleOrder) yield Stoner(stoner, messageQueue, circleOrder)
 
-		messageQueue += new Message(null, Matches, "yourTurnToRoll");
+  		val firstMessage = new Message(null, Matches, "yourTurnToRoll") 
+		messageQueue += firstMessage;
 
 		for (smoker <- stoners) {
 		  smoker.start()
 		}
 		
+		stoners.head ! firstMessage
+		
 		Thread.sleep(100)
 		
-		System.exit(0)  // TODO:  BAD!!!
+		for (smoker <- stoners) {
+		  smoker ! "EXIT"
+		}
 
 		println("finished")
 }
