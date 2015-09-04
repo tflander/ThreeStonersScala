@@ -35,7 +35,7 @@ class StonerMessageHandler(stoner: Stoner) {
     stoner.supplyCount = 0
     stoners.foreach(otherStoner => {
       if (otherStoner.stonerId != stoner.stonerId) {
-        sendMessage(stoner.stonerId, "requestSupply")
+        sendMessage(otherStoner.stonerId, "requestSupply")
       }
     })
   }
