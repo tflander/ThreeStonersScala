@@ -3,7 +3,7 @@ package threeStoners
 object ThreeStoners extends App {
 
   val circleOrder = Seq(Paper, Weed, Matches)
-  val stoners = for (supply <- circleOrder) yield Stoner(supply)
+  val stoners = for (supply <- circleOrder) yield new Stoner(supply)
 
   for (stoner <- stoners) {
     stoner.stoners = stoners
