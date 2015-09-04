@@ -1,23 +1,23 @@
 package threeStoners
 
-import scala.collection.mutable.Queue
-
 object ThreeStoners extends App {
 
   val circleOrder = Seq(Paper, Weed, Matches)
-  val stoners = for (stoner <- circleOrder) yield Stoner(stoner, circleOrder)
+  val stoners = for (supply <- circleOrder) yield Stoner(supply)
 
-  for (smoker <- stoners) {
-    smoker.stoners = stoners
+  for (stoner <- stoners) {
+    stoner.stoners = stoners
   }
 
-  val firstMessage = new Message(null, Paper, "yourTurnToRoll")
+  val stonerToRoll = stoners.head
+  
+  val firstMessage = new Message(from=null, to=stonerToRoll.stonerId, "yourTurnToRoll")
 
   for (smoker <- stoners) {
     smoker.start()
   }
 
-  stoners.head ! firstMessage
+  stonerToRoll ! firstMessage
 
   Thread.sleep(100)
 

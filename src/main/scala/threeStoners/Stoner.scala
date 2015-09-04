@@ -14,20 +14,19 @@ object Matches extends SmokingSupply
 
 case class Message(from: SmokingSupply, to: SmokingSupply, message: String)
 
-case class Stoner(supply: SmokingSupply, circleOrder: Seq[SmokingSupply]) extends Actor {
+case class Stoner(supply: SmokingSupply) extends Actor {
 
   val stonerId = supply
   var supplyCount = 0
 
   var stoners: Seq[Stoner] = _
   
-  // TODO:  get rid of circleOrder
-  val nextStoner = {
-    val stonerCount = circleOrder.size
-    val me = circleOrder.indexOf(stonerId)
+  lazy val nextStoner = {
+    val stonerCount = stoners.size
+    val me = stoners.indexOf(this)
     me + 1 match {
-      case `stonerCount` => circleOrder(0)
-      case nextStoner => circleOrder(me + 1)
+      case `stonerCount` => stoners(0).stonerId
+      case nextStoner => stoners(me + 1).stonerId
     }
   }
 
@@ -63,9 +62,9 @@ case class Stoner(supply: SmokingSupply, circleOrder: Seq[SmokingSupply]) extend
       case "yourTurnToRoll" => {
         println(message.to + " guy needs to roll a joint")
         supplyCount = 0
-        circleOrder.foreach(stoner => {
-          if (stoner != stonerId) {
-            sendMessage(stoner, "requestSupply")
+        stoners.foreach(stoner => {
+          if (stoner.stonerId != stonerId) {
+            sendMessage(stoner.stonerId, "requestSupply")
           }
         })
       }

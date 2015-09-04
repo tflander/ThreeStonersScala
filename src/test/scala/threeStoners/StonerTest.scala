@@ -8,7 +8,7 @@ class StonerTest extends FunSpec with ShouldMatchers with BeforeAndAfter {
   describe("Stoner Tests") {
     
     
-    class StonerSpy(s: SmokingSupply, c: Seq[SmokingSupply], var messageCountToProcess: Int = 0) extends Stoner(s, c) {
+    class StonerSpy(s: SmokingSupply, var messageCountToProcess: Int = 0) extends Stoner(s) {
       var lastMessage: Message = null
       
       override def processMessage(message: Message) = {
@@ -31,9 +31,9 @@ class StonerTest extends FunSpec with ShouldMatchers with BeforeAndAfter {
     before {
       out = new java.io.ByteArrayOutputStream
       Console.setOut(out)
-      paperGuy = new StonerSpy(Paper, circleOrder)
-      weedGuy = new StonerSpy(Weed, circleOrder, messageCountToProcess = 1)
-      matchesGuy = new StonerSpy(Matches, circleOrder)
+      paperGuy = new StonerSpy(Paper)
+      weedGuy = new StonerSpy(Weed, messageCountToProcess = 1)
+      matchesGuy = new StonerSpy(Matches)
       val stoners = Seq(paperGuy, weedGuy, matchesGuy)
 
       for (stoner <- stoners) {
