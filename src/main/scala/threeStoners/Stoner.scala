@@ -11,11 +11,10 @@ object Weed extends SmokingSupply
 object Paper extends SmokingSupply
 object Matches extends SmokingSupply
 
-case class Message(from: SmokingSupply, to: SmokingSupply, message: String)
+case class Message(from: String, to: String, message: String)
 
-class Stoner(val supply: SmokingSupply) extends Actor {
+class Stoner(val stonerId: String, val supply: SmokingSupply) extends Actor {
 
-  val stonerId = supply
   val stonerMessageHander = new StonerMessageHandler(this)
   var supplyCount = 0
 
@@ -54,7 +53,7 @@ class Stoner(val supply: SmokingSupply) extends Actor {
         processMessage(message)
         act()
       }
-      case "EXIT" => println(stonerId + " guy exiting")
+      case "EXIT" => println(stonerId + " exiting")
     }
   }
 }
