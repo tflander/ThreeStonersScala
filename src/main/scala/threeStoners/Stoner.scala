@@ -13,9 +13,9 @@ object Matches extends SmokingSupply
 
 case class Message(from: String, to: String, message: String)
 
-class Stoner(val stonerId: String, val supply: SmokingSupply) extends Actor {
+class Stoner(val stonerId: String, val supply: SmokingSupply, out: java.io.ByteArrayOutputStream = null) extends Actor {
 
-  val stonerMessageHander = new StonerMessageHandler(this)
+  val stonerMessageHander = new StonerMessageHandler(this, out)
   var supplyCount = 0
 
   var stoners: Seq[Stoner] = _
