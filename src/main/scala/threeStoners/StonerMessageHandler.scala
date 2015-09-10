@@ -1,17 +1,17 @@
 package threeStoners
 
 class StonerMessageHandler(stoner: Stoner, out: java.io.ByteArrayOutputStream = null) {
-  
-  lazy val stoners = stoner.stoners
+
+  lazy val hippyCircle = stoner.hippyCircle
   
   def requestSupply(message: Message) {
-    val supply = stoners.filter(_.stonerId == message.to).head.supply.toString.toLowerCase
+    val supply = hippyCircle.getStonerById(message.to).supply.toString.toLowerCase
     log(message.from + " requested " + supply + " from " + message.to)
     sendMessage(to = message.from, "takeSupply")
   }
 
   def takeSupply(message: Message) {
-    val supply = stoners.filter(_.stonerId == message.from).head.supply.toString.toLowerCase
+    val supply = hippyCircle.getStonerById(message.from).supply.toString.toLowerCase
     log(message.to + " takes " + supply + " from " + message.from)
     stoner.supplyCount += 1
     if (stoner.supplyCount == 2) {
@@ -35,11 +35,21 @@ class StonerMessageHandler(stoner: Stoner, out: java.io.ByteArrayOutputStream = 
   def yourTurnToRoll(message: Message) {
     log(message.to + " needs to roll a joint")
     stoner.supplyCount = 0
-    stoners.foreach(otherStoner => {
-      if (otherStoner.stonerId != stoner.stonerId) {
-        sendMessage(otherStoner.stonerId, "requestSupply")
+
+    def requestSupplyFrom(dudes: Seq[Stoner]) {
+      import scala.util.Random
+      val randomDude = dudes(Random.nextInt(dudes.size))
+      sendMessage(randomDude.stonerId, "requestSupply")
+    }
+
+    stoner.suppliesNeeded foreach (supply => {
+      supply match {
+        case Weed => requestSupplyFrom(hippyCircle.weedGuys)
+        case Paper => requestSupplyFrom(hippyCircle.paperGuys)
+        case Matches => requestSupplyFrom(hippyCircle.matchesGuys)
       }
     })
+
   }
 
   def roll(message: Message) {
@@ -50,12 +60,12 @@ class StonerMessageHandler(stoner: Stoner, out: java.io.ByteArrayOutputStream = 
   }
 
   def sendMessage(to: String, message: String) = {
-    stoners.filter(_.stonerId == to).head ! Message(from = stoner.stonerId, to, message)
+    hippyCircle.getStonerById(to) ! Message(from = stoner.stonerId, to, message)
   }
 
   def log(msg: String) = {
-    if(out == null) {
-    	println(Thread.currentThread().getName() + ": " + msg)      
+    if (out == null) {
+      println(Thread.currentThread().getName() + ": " + msg)
     } else {
       out.write(msg.getBytes)
       out.write('\n')

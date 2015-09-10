@@ -3,11 +3,9 @@ import org.scalatest._
 import scala.util.Random
 import java.util.Date
 
-class StonerTest extends FunSpec with ShouldMatchers with BeforeAndAfter {
-
+class ThreeStonerTest extends FunSpec with ShouldMatchers with BeforeAndAfter {
+  
   describe("Three Stoner Tests") {
-
-    val circleOrder = Seq(Paper, Weed, Matches)
 
     var out: java.io.ByteArrayOutputStream = null
     var paperGuy: Stoner = null
@@ -22,6 +20,14 @@ class StonerTest extends FunSpec with ShouldMatchers with BeforeAndAfter {
       init(Seq(paperGuy, weedGuy, matchesGuy))
     }
 
+    it("sets up stoner attributes") {
+    	weedGuy.nextStoner should be ("Selva")
+    	weedGuy.stonerId should be ("Prabu")
+    	weedGuy.supply should be (Weed)
+    	weedGuy.supplyCount should be (0)
+    	weedGuy.suppliesNeeded should be (Set(Paper, Matches))
+    }
+    
     it("handles message to request supply") {
       weedGuy.processMessage(Message("Himanshu", "Prabu", "requestSupply"))
       out.toString should be("Himanshu requested weed from Prabu\n")
@@ -96,8 +102,10 @@ class StonerTest extends FunSpec with ShouldMatchers with BeforeAndAfter {
   }
 
   def init(stoners: Seq[Stoner]) {
+    val hippyCircle = HippyCircle(stoners)
+
     for (stoner <- stoners) {
-      stoner.stoners = stoners
+      stoner.hippyCircle = hippyCircle
     }
 
     for (stoner <- stoners) {

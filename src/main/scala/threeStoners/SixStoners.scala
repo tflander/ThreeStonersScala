@@ -1,11 +1,14 @@
 package threeStoners
 
-object ThreeStoners extends App {
+object SixStoners extends App {
 
   val stoners = Seq(
       new Stoner("Himanshu", Paper),
       new Stoner("Prabu", Weed),
-      new Stoner("Selva", Matches)
+      new Stoner("Selva", Matches),
+      new Stoner("Jim", Paper),
+      new Stoner("Siva", Weed),
+      new Stoner("Kannan", Matches)
   )
 
   val hippyCircle = HippyCircle(stoners)

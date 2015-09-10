@@ -17,10 +17,17 @@ class Stoner(val stonerId: String, val supply: SmokingSupply, out: java.io.ByteA
 
   val stonerMessageHander = new StonerMessageHandler(this, out)
   var supplyCount = 0
-
-  var stoners: Seq[Stoner] = _
+  
+  val suppliesNeeded = supply match {
+    case Paper => Set(Weed, Matches)
+    case Weed => Set(Paper, Matches)
+    case Matches => Set(Weed, Paper)
+  }
+  
+  var hippyCircle: HippyCircle = _
 
   lazy val nextStoner = {
+    val stoners = hippyCircle.stoners
     val stonerCount = stoners.size
     val me = stoners.indexOf(this)
     me + 1 match {
@@ -53,7 +60,7 @@ class Stoner(val stonerId: String, val supply: SmokingSupply, out: java.io.ByteA
         processMessage(message)
         act()
       }
-      case "EXIT" => println(stonerId + " exiting")
+      case "EXIT" => 
     }
   }
 }
